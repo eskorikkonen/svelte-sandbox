@@ -1,11 +1,11 @@
 <script>
 	import { onMount } from 'svelte';
-	import FadingH1 from '../../components/FadingH1.svelte';
+	import FadingH1 from '$components/FadingH1.svelte';
 
-	const changeSettings = {
+	const settings = {
 		minChange: 2,
 		maxChange: 5,
-		speedMilliseconds: Math.round(1000 / 30),
+		speedMilliseconds: Math.round(1000 / 30)
 	};
 
 	let playing = false;
@@ -13,19 +13,19 @@
 
 	onMount(() => {
 		togglePlaying();
-	})
+	});
 
 	const togglePlaying = () => {
 		playing = !playing;
 
 		if (playing) {
 			intervalId = setInterval(() => {
-				cycleColors()
-			}, changeSettings.speedMilliseconds);
+				cycleColors();
+			}, settings.speedMilliseconds);
 		} else if (intervalId) {
 			clearInterval(intervalId);
 		}
-	}
+	};
 
 	const colors = {
 		red: {
@@ -33,53 +33,51 @@
 			changeDir: {
 				r: -1,
 				g: 1,
-				b: 1,
-			},
+				b: 1
+			}
 		},
 		green: {
 			rgb: { r: 0, g: 255, b: 0 },
 			changeDir: {
 				r: 1,
 				g: -1,
-				b: 1,
-			},
+				b: 1
+			}
 		},
 		blue: {
 			rgb: { r: 0, g: 0, b: 255 },
 			changeDir: {
 				r: 1,
 				g: 1,
-				b: -1,
-			},
-		},
+				b: -1
+			}
+		}
 	};
 
 	$: styles = {
 		nwColor: rgbToHex(colors.red.rgb),
 		neColor: rgbToHex(colors.green.rgb),
-		sColor: rgbToHex(colors.blue.rgb),
+		sColor: rgbToHex(colors.blue.rgb)
 	};
 
 	$: cssVarStyles = Object.entries(styles)
 		.map(([key, value]) => `--${key}:${value}`)
-		.join(";");
+		.join(';');
 
 	const componentToHex = (c) => {
 		var hex = c.toString(16);
-		return hex.length == 1 ? "0" + hex : hex;
+		return hex.length == 1 ? '0' + hex : hex;
 	};
 
 	const rgbToHex = ({ r, g, b }) => {
-		return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+		return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 	};
 
 	const calculateRandomIncrease = (color) => {
 		for (const property in color.rgb) {
 			const change =
 				color.changeDir[property] *
-				Math.floor(
-					Math.random() * changeSettings.maxChange + changeSettings.minChange
-				);
+				Math.floor(Math.random() * settings.maxChange + settings.minChange);
 			const newValue = color.rgb[property] + change;
 
 			if (newValue <= 255 && newValue >= 0) {
@@ -97,12 +95,11 @@
 		colors.NE = calculateRandomIncrease(colors.green);
 		colors.S = calculateRandomIncrease(colors.blue);
 	};
-
 </script>
 
 <main style={cssVarStyles} on:click={togglePlaying}>
 	{#if !playing}
-	<span class="pausedNotice">Paused (click to continue)</span>
+		<span class="pausedNotice">Paused (click to continue)</span>
 	{/if}
 	<FadingH1 visible={!playing}>Colors</FadingH1>
 
@@ -145,26 +142,14 @@
 	}
 
 	.NW {
-		background: radial-gradient(
-			farthest-corner at 0px 0px,
-			var(--nwColor) 10%,
-			transparent 80%
-		);
+		background: radial-gradient(farthest-corner at 0px 0px, var(--nwColor) 10%, transparent 80%);
 	}
 
 	.NE {
-		background: radial-gradient(
-			farthest-corner at 100% 0,
-			var(--neColor) 10%,
-			transparent 80%
-		);
+		background: radial-gradient(farthest-corner at 100% 0, var(--neColor) 10%, transparent 80%);
 	}
 
 	.S {
-		background: radial-gradient(
-			farthest-corner at 50% 100%,
-			var(--sColor) 10%,
-			transparent 80%
-		);
+		background: radial-gradient(farthest-corner at 50% 100%, var(--sColor) 10%, transparent 80%);
 	}
 </style>
